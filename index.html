@@ -1,0 +1,804 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>8BALLTV Submission Preview</title>
+<style>
+/* Same as your other site: the .ttf must sit in the SAME folder as this index.html. */
+@font-face {
+  font-family: 'Px437 IBM EGA8';
+  src: url('Px437_IBM_EGA8.ttf') format('truetype');
+  font-display: swap;
+}
+
+/* ---- Header styles (from your other site) ---- */
+.pixel { font-family: 'Px437 IBM EGA8', Arial, Helvetica, sans-serif; font-weight: normal; }
+html:not(.font-ready):not(.font-failed) .pixel { visibility: hidden; }
+/* Same stack as your CSS (black / magenta / black / magenta), scaled with the text like your
+   mobile rule (.05em steps), but never thinner than 1px so it stays visible on small text. */
+.redshad {
+  --u: max(.05em, 1px);
+  text-shadow:
+    var(--u) var(--u) 0 #000,
+    calc(var(--u) * 2) calc(var(--u) * 2) 0 #f400ff,
+    calc(var(--u) * 3) calc(var(--u) * 3) 0 #000,
+    calc(var(--u) * 4) calc(var(--u) * 4) 0 #f400ff;
+}
+.green { color: #00ff00; }
+/* if pixel font isn't there, don't do text shadow */
+html:not(.font-ready) .header-title { text-shadow: none; letter-spacing: 0; }
+
+/* ---- Base ---- */
+:root { --red: #ff2d2d; --grey: #bbb; --grey-dim: #444; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { background: #000; }
+body {
+  margin: 0; background: #000; color: #fff;
+  font-family: Arial, Helvetica, sans-serif; line-height: 1.35;
+  -webkit-text-size-adjust: 100%;
+}
+/* Content column. The header lives inside it and is sized from ITS width (container-type),
+   so changing max-width here resizes the header and the content together. */
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 16px 72px; container-type: inline-size; }
+
+/* ---- Header + menu ---- */
+/* One line, filling the content column: font-size = (column width - menu button - gap) / ~26.6 chars.
+   The first font-size is a viewport-based fallback for browsers without container query units. */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 20px 0 8px; }
+.header-title {
+  margin: 0; padding: 0 .2em .2em 0; line-height: 1.15; letter-spacing: 0; white-space: nowrap;
+  font-size: clamp(10px, calc((min(100vw, 1100px) - 124px) / 26.6), 72px);
+  font-size: clamp(10px, calc((100cqw - 60px) / 26.6), 72px);
+}
+.menuwrap { position: relative; flex: none; }
+.menubtn { background: none; border: 0; padding: 8px; cursor: pointer; display: block; }
+.menubtn svg { display: block; width: 36px; height: 36px; }
+@media (max-width: 700px) {
+  .top { padding: 16px 0 6px; }
+  .header-title {
+    font-size: clamp(10px, calc((100vw - 80px) / 26.6), 72px);
+    font-size: clamp(10px, calc((100cqw - 48px) / 26.6), 72px);
+  }
+  .menubtn { padding: 6px; }
+  .menubtn svg { width: 28px; height: 28px; }
+}
+.menu { position: absolute; right: 0; top: 100%; z-index: 30; background: #000; border: 2px solid #fff; min-width: 150px; }
+.menu button {
+  display: block; width: 100%; text-align: left; background: none; color: #fff; white-space: nowrap;
+  border: 0; padding: 12px 16px; font: inherit; font-size: 1.05rem; cursor: pointer;
+}
+.menu button:hover, .menu button:focus-visible { background: #fff; color: #000; }
+
+dialog { background: #000; color: #fff; border: 2px solid #fff; padding: 0; max-width: min(720px, calc(100vw - 32px)); }
+.dlg-inner a { color: #00ff00; }
+.dlg-inner p { margin: 0 0 14px; line-height: 1.45; }
+.dlg-inner .small { font-size: .85rem; opacity: .8; }
+.dlg-inner .cmd {
+  margin: 0; padding: 12px; background: #111; border: 1px solid #555; color: #fff;
+  font: 13px/1.5 ui-monospace, Menlo, Consolas, monospace; white-space: pre; overflow: auto; max-height: 40vh;
+}
+.dlg-inner .copylink {
+  display: inline-block; margin: 8px 0 18px; padding: 0; background: none; color: #00ff00;
+  font: inherit; font-weight: 400; text-decoration: underline; cursor: pointer;
+}
+dialog::backdrop { background: rgba(0, 0, 0, .75); }
+.dlg-inner { padding: 24px; }
+.dlg-inner h2 { margin: 0 0 12px; }
+.dlg-inner button { margin-top: 16px; background: #fff; color: #000; border: 0; padding: 10px 18px; font: inherit; font-weight: 700; cursor: pointer; }
+
+/* ---- Submission info ---- */
+.submitted { font-size: .85rem; font-style: italic; text-decoration: underline; margin: 20px 0 14px; overflow-wrap: anywhere; }
+.metaline { font-weight: 700; text-transform: uppercase; margin: 0 0 6px; overflow-wrap: anywhere; }
+.metaline.onair { color: var(--red); }
+.name { font-size: clamp(2.2rem, 9vw, 3.4rem); font-weight: 600; line-height: 1.1; margin: 12px 0 8px; overflow-wrap: anywhere; }
+.email {
+  display: inline-flex; align-items: center; gap: 10px; background: none; border: 0; color: #fff;
+  font: inherit; font-size: 1.2rem; font-weight: 600; padding: 4px 0; cursor: pointer; text-align: left; overflow-wrap: anywhere;
+}
+.email svg { flex: none; width: 24px; height: 24px; }
+.copied { font-size: .9rem; font-weight: 400; font-style: italic; margin-left: 10px; }
+.block { margin-top: 24px; }
+.block .label { font-weight: 700; margin: 0 0 14px; }
+.block .text { font-style: italic; white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; max-width: 80ch; }
+
+/* ---- Toggle ---- */
+.toggle { display: inline-flex; gap: 12px; flex: none; }
+.toggle button { background: none; border: 0; border-bottom: 2px solid transparent; color: #fff; padding: 6px; opacity: .45; cursor: pointer; }
+.toggle button[aria-pressed="true"] { opacity: 1; border-bottom-color: #fff; }
+.toggle svg { display: block; width: 28px; height: 28px; }
+.toolbar { margin-top: 28px; }
+
+/* ---- Videos ---- */
+.vtitle { font-size: clamp(1.6rem, 6vw, 2.25rem); font-weight: 700; margin: 0 0 12px; line-height: 1.15; overflow-wrap: anywhere; }
+.video { margin-top: 26px; }
+.media { position: relative; aspect-ratio: 16 / 9; width: 100%; background: #000; overflow: hidden; }
+.list .media { max-width: 720px; }
+.media iframe, .media video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: #000; }
+.linkbox {
+  position: absolute; inset: 0; background: var(--grey); color: #000; text-decoration: none;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 12px; text-align: center;
+}
+.linkbox svg { width: 14%; max-width: 64px; min-width: 36px; height: auto; }
+.linkbox .lbl { max-width: 100%; overflow-wrap: anywhere; font-size: clamp(1rem, 4vw, 1.6rem); font-weight: 700; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.linkbox.nolink .lbl { text-decoration: none; }
+.linkbox .raw { font-size: .85rem; overflow-wrap: anywhere; }
+
+/* ---- Slideshow ---- */
+.sshead { display: flex; align-items: center; gap: 10px; margin-top: 28px; }
+.sshead .vtitle { flex: 1; text-align: center; margin: 0; font-size: clamp(1.4rem, 5.5vw, 2.25rem); }
+.sshead .spacer { width: 76px; flex: none; }
+.ss-vp { position: relative; overflow: hidden; margin: 16px -16px 0; }
+.ss-track { display: flex; will-change: transform; }
+.slide { flex: 0 0 var(--sw, 70%); }
+.slide:not(.active) .media { background: var(--grey-dim); cursor: pointer; }
+.slide:not(.active) .media > * { display: none; }
+.arrow {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
+  width: 40px; height: 40px; background: #fff; border: 0; display: grid; place-items: center; cursor: pointer; padding: 0;
+}
+.arrow svg { width: 26px; height: 26px; display: block; }
+.arrow.prev { left: 3%; }
+.arrow.next { right: 3%; }
+.arrow[disabled] { visibility: hidden; }
+
+.empty { margin-top: 40px; font-size: 1.1rem; }
+@media (prefers-reduced-motion: reduce) { .ss-track { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1 class="pixel green redshad header-title">8BALLTV SUBMISSION PREVIEW</h1>
+    <div class="menuwrap">
+      <button class="menubtn" id="menuBtn" type="button" aria-label="Menu" aria-haspopup="true" aria-expanded="false">
+        <svg viewBox="0 0 36 36" aria-hidden="true"><rect x="3" y="7" width="30" height="4" fill="#fff"/><rect x="3" y="16" width="30" height="4" fill="#fff"/><rect x="3" y="25" width="30" height="4" fill="#fff"/></svg>
+      </button>
+      <div class="menu" id="menu" hidden>
+        <button type="button" id="aboutBtn">About</button>
+        <button type="button" id="dlBtn" hidden>Download this submission</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="app"></main>
+  <noscript><p class="empty">This page needs JavaScript to display the submission.</p></noscript>
+</div>
+
+<dialog id="aboutDlg" aria-labelledby="aboutTitle">
+  <div class="dlg-inner">
+    <h2 id="aboutTitle">About</h2>
+    <!-- TODO: replace with your explanation of the page -->
+    <p>This is a tool that makes 8 Ball TV submissions from Google Sheets look nicer.
+<br><br>
+You might have noticed that the link in your browser bar is a bazillion characters long. That’s because this site works by jamming all the Google Sheets text related to a submission into the url after a #, which makes it locally readable by this site’s javascript.
+<br><br>
+You cannot share links from this site with any ease. It is only intended as a tool to visually look at submissions from the Google Sheet easier.
+<br><br>
+Nothing on this page is published online. Everything is private. Everything is being served from your computer locally.
+<br><br>
+Enjoy!
+<br><br>
+- Imogen “Kevin” Mead 2026
+
+</p>
+    <form method="dialog"><button type="submit">Close</button></form>
+  </div>
+</dialog>
+
+<dialog id="dlDlg" aria-labelledby="dlTitle">
+  <div class="dlg-inner">
+    <h2 id="dlTitle">Download this submission</h2>
+    <div id="dlBody"></div>
+    <form method="dialog"><button type="submit">Close</button></form>
+  </div>
+</dialog>
+
+<script>
+(function () {
+'use strict';
+
+// ==PURE-START==
+var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function ordinal(d) {
+  if (d % 100 >= 11 && d % 100 <= 13) return 'th';
+  switch (d % 10) { case 1: return 'st'; case 2: return 'nd'; case 3: return 'rd'; default: return 'th'; }
+}
+
+// "11/10/2026 22:01:21" (M/D/YYYY, 24h) -> "Nov 10th, 2026 10:01:21 PM". Falls back to the raw text.
+function formatTimestamp(raw) {
+  raw = (raw || '').trim();
+  if (!raw) return '';
+  var m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ T,]+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)?)?$/i.exec(raw);
+  if (!m) return raw;
+  var mo = +m[1], d = +m[2];
+  if (mo < 1 || mo > 12 || d < 1 || d > 31) return raw;
+  var out = MONTHS[mo - 1] + ' ' + d + ordinal(d) + ', ' + m[3];
+  if (m[4] != null) {
+    var hh = +m[4], ap;
+    if (m[7]) { ap = m[7].toUpperCase(); }
+    else { ap = hh >= 12 ? 'PM' : 'AM'; hh = hh % 12 || 12; }
+    out += ' ' + hh + ':' + m[5] + (m[6] != null ? ':' + m[6] : '') + ' ' + ap;
+  }
+  return out;
+}
+
+// "{[Title], [url], [1]} {[Title 2], [url2], [2]}" -> [{title, url, n}]
+function parseLinks(raw) {
+  var s = (raw || '').trim();
+  if (!s) return [];
+  var re = /\{\s*\[([\s\S]*?)\]\s*,\s*\[([\s\S]*?)\]\s*,\s*\[([\s\S]*?)\]\s*\}/g;
+  var out = [], m;
+  while ((m = re.exec(s))) out.push({ title: m[1].trim(), url: m[2].trim(), n: parseFloat(m[3]) });
+  if (out.length) return out;
+  // Fallback if the format ever drifts: pull out anything that looks like a link.
+  var loose = s.match(/(?:https?:\/\/)?[^\s,\[\]{}]+\.[^\s,\[\]{}]+/g) || [];
+  return loose.map(function (u) { return { title: '', url: u, n: NaN }; });
+}
+
+// Accepts "firstfilm.com/video" (adds https://). Rejects javascript:, data:, mailto:, etc.
+function normalizeUrl(raw) {
+  var s = (raw || '').trim();
+  if (!s) return null;
+  if (!/^https?:\/\//i.test(s)) {
+    if (/^[a-z][a-z0-9+.-]*:(?!\d)/i.test(s)) return null;
+    s = 'https://' + s.replace(/^\/+/, '');
+  }
+  try {
+    var u = new URL(s);
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') return null;
+    if (u.hostname.indexOf('.') === -1 && u.hostname !== 'localhost') return null;
+    return u;
+  } catch (e) { return null; }
+}
+
+function ytStart(v) {
+  if (!v) return 0;
+  if (/^\d+$/.test(v)) return +v;
+  var m = /^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/.exec(v);
+  return m ? (+m[1] || 0) * 3600 + (+m[2] || 0) * 60 + (+m[3] || 0) : 0;
+}
+
+// Decide how to show a URL: {kind:'iframe', src, provider, id?} | {kind:'video', src} | {kind:'link'}
+function classify(u, pageHost) {
+  var h = u.hostname.toLowerCase().replace(/^(www|m|music|player)\./, '');
+  var parts = u.pathname.split('/').filter(Boolean);
+  var sp = u.searchParams;
+  var ID = /^[\w-]+$/;
+
+  // YouTube
+  if (h === 'youtube.com' || h === 'youtube-nocookie.com' || h === 'youtu.be') {
+    var list = sp.get('list');
+    if (list && ID.test(list) && (parts[0] === 'playlist' || (parts[0] === 'embed' && parts[1] === 'videoseries'))) {
+      return { kind: 'iframe', provider: 'youtube-playlist', dl: 'https://www.youtube.com/playlist?list=' + list, src: 'https://www.youtube.com/embed/videoseries?list=' + list };
+    }
+    var id = null;
+    if (h === 'youtu.be') id = parts[0];
+    else if (parts[0] === 'watch') id = sp.get('v');
+    else if (['shorts', 'embed', 'live', 'v'].indexOf(parts[0]) > -1) id = parts[1];
+    if (id && /^[\w-]{11}$/.test(id)) {
+      var start = ytStart(sp.get('t') || sp.get('start'));
+      return { kind: 'iframe', provider: 'youtube', id: id, dl: 'https://www.youtube.com/watch?v=' + id, src:'https://www.youtube.com/embed/' + id + '?rel=0' + (start ? '&start=' + start : '') };
+    }
+    return { kind: 'link' };
+  }
+
+  // Vimeo (including unlisted links with a hash)
+  if (h === 'vimeo.com') {
+    var vi = parts.indexOf('video');
+    var idx = (vi > -1 && /^\d+$/.test(parts[vi + 1] || '')) ? vi + 1 : parts.findIndex(function (p) { return /^\d+$/.test(p); });
+    if (idx > -1) {
+      var hash = parts[idx + 1];
+      var hv = (hash && /^[0-9a-f]{6,}$/i.test(hash)) ? hash : sp.get('h');
+      return { kind: 'iframe', provider: 'vimeo', dl: 'https://vimeo.com/' + parts[idx] + (hv && ID.test(hv) ? '/' + hv : ''), src:'https://player.vimeo.com/video/' + parts[idx] + (hv && ID.test(hv) ? '?h=' + hv : '') };
+    }
+    return { kind: 'link' };
+  }
+
+  // Google Drive files (folders can't be shown as a video, so they fall through to the link box)
+  if (h === 'drive.google.com') {
+    var dm = /\/file\/(?:u\/\d+\/)?d\/([\w-]+)/.exec(u.pathname);
+    var did = dm ? dm[1] : ((u.pathname === '/open' || u.pathname === '/uc') ? sp.get('id') : null);
+    if (did && ID.test(did)) {
+      var rk = sp.get('resourcekey');
+      return { kind: 'iframe', provider: 'drive', src: 'https://drive.google.com/file/d/' + did + '/preview' + (rk && ID.test(rk) ? '?resourcekey=' + rk : '') };
+    }
+    return { kind: 'link' };
+  }
+
+  // Dailymotion
+  if (h === 'dailymotion.com' || h === 'dai.ly') {
+    var dmid = h === 'dai.ly' ? parts[0] : (parts[0] === 'video' ? (parts[1] || '').split('_')[0] : null);
+    if (dmid && ID.test(dmid)) return { kind: 'iframe', provider: 'dailymotion', src: 'https://www.dailymotion.com/embed/video/' + dmid };
+    return { kind: 'link' };
+  }
+
+  // Twitch (needs the embedding page's hostname as "parent")
+  if (h === 'twitch.tv' || h === 'clips.twitch.tv') {
+    var parent = '&parent=' + encodeURIComponent(pageHost || 'localhost');
+    if (h === 'clips.twitch.tv' && parts[0] && ID.test(parts[0])) return { kind: 'iframe', provider: 'twitch', src: 'https://clips.twitch.tv/embed?clip=' + parts[0] + parent };
+    if (parts[1] === 'clip' && parts[2] && ID.test(parts[2])) return { kind: 'iframe', provider: 'twitch', src: 'https://clips.twitch.tv/embed?clip=' + parts[2] + parent };
+    if (parts[0] === 'videos' && /^\d+$/.test(parts[1] || '')) return { kind: 'iframe', provider: 'twitch', src: 'https://player.twitch.tv/?video=v' + parts[1] + parent + '&autoplay=false' };
+    if (parts.length === 1 && /^\w{3,25}$/.test(parts[0]) && ['videos', 'directory', 'downloads', 'jobs', 'turbo', 'settings', 'p'].indexOf(parts[0]) === -1) {
+      return { kind: 'iframe', provider: 'twitch', src: 'https://player.twitch.tv/?channel=' + parts[0] + parent + '&autoplay=false' };
+    }
+    return { kind: 'link' };
+  }
+
+  // Internet Archive
+  if (h === 'archive.org') {
+    if (parts[0] === 'details' && parts[1] && /^[\w.\-]+$/.test(parts[1])) return { kind: 'iframe', provider: 'archive', src: 'https://archive.org/embed/' + parts[1] };
+    return { kind: 'link' };
+  }
+
+  // Loom
+  if (h === 'loom.com') {
+    if (parts[0] === 'share' && parts[1] && ID.test(parts[1])) return { kind: 'iframe', provider: 'loom', src: 'https://www.loom.com/embed/' + parts[1] };
+    return { kind: 'link' };
+  }
+
+  // Streamable
+  if (h === 'streamable.com') {
+    var sid = parts[0] === 'e' ? parts[1] : (parts.length === 1 ? parts[0] : null);
+    if (sid && ID.test(sid)) return { kind: 'iframe', provider: 'streamable', src: 'https://streamable.com/e/' + sid };
+    return { kind: 'link' };
+  }
+
+  // Direct video files
+  if (/\.(mp4|webm|ogv|mov|m4v)$/i.test(u.pathname)) return { kind: 'video', src: u.href };
+
+  return { kind: 'link' };
+}
+
+// Make a string safe for a file/folder name and for pasting into any shell inside double quotes:
+// spaces -> underscores, only letters/digits/underscore/hyphen/dot survive.
+function safeName(s, fallback) {
+  var t = String(s || '').replace(/\s+/g, '_').replace(/[^\p{L}\p{N}_.-]+/gu, '').replace(/_+/g, '_').replace(/^[._-]+|[._-]+$/g, '').slice(0, 80);
+  return t || fallback;
+}
+
+// "11/09/2026 ..." -> "11092026" (submission date). Falls back to today if the timestamp can't be read.
+function folderDate(ts) {
+  function pad(n) { return ('0' + n).slice(-2); }
+  var m = /^\s*(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(ts || '');
+  if (m) return pad(m[1]) + pad(m[2]) + m[3];
+  var d = new Date();
+  return pad(d.getMonth() + 1) + pad(d.getDate()) + d.getFullYear();
+}
+
+// One yt-dlp command per YouTube/Vimeo video, named "<order>_<title>" inside "<Name>_<MMDDYYYY>".
+// Order number = the position shown on the page. Everything else is reported in `skipped`.
+function buildYtdlp(videos, name, ts) {
+  var folder = safeName(name, 'Submission') + '_' + folderDate(ts);
+  var commands = [], skipped = [];
+  videos.forEach(function (v, i) {
+    var num = i + 1;
+    if (v.info && v.info.dl) {
+      var file = folder + '/' + num + '_' + safeName(v.title, 'Untitled') +
+        (v.info.provider === 'youtube-playlist' ? '_%(playlist_index)02d' : '') + '.%(ext)s';
+      // -P "~/Downloads": quoted so the shell leaves the ~ alone and yt-dlp expands it itself, on any OS.
+      commands.push('yt-dlp -P "~/Downloads" -f "bv*+ba/b" --merge-output-format mp4 -o "' + file + '" "' + v.info.dl + '"');
+    } else {
+      skipped.push({ num: num, title: v.title || 'Untitled' });
+    }
+  });
+  return { folder: folder, commands: commands, skipped: skipped };
+}
+
+// Short label for the grey link box: "vimeo.com/video/s2lAbCdEfGhI..." (no scheme, no www., cut at `max` characters).
+function displayUrl(u, max) {
+  max = max || 28;
+  var s = u.host.replace(/^www\./, '') + u.pathname.replace(/\/+$/, '') + u.search;
+  var chars = Array.from(s);
+  return chars.length > max ? chars.slice(0, max).join('') + '…' : s;
+}
+// [2,3,4,5,7] -> "2-5, 7"; [1,3,5,7] -> "1, 3, 5, 7". Consecutive numbers collapse into a span.
+function formatRanges(nums) {
+  var out = [], i = 0;
+  while (i < nums.length) {
+    var j = i;
+    while (j + 1 < nums.length && nums[j + 1] === nums[j] + 1) j++;
+    out.push(j > i ? nums[i] + '-' + nums[j] : String(nums[i]));
+    i = j + 1;
+  }
+  return out.join(', ');
+}
+// ==PURE-END==
+
+/* ================= DOM / app code ================= */
+
+var root = document.documentElement;
+var app = document.getElementById('app');
+var state = { data: null, videos: [], mode: loadMode(), index: 0 };
+var ss = null;           // slideshow refs while in slideshow mode
+var tokenCounter = 0;
+
+var ICON = {
+  copy: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="13" height="13" rx="2"/><path d="M16 21H5a2 2 0 0 1-2-2V8"/></svg>',
+  list: '<svg viewBox="0 0 28 28" fill="#fff" aria-hidden="true"><rect x="3" y="5" width="4" height="4"/><rect x="10" y="5" width="15" height="4"/><rect x="3" y="12" width="4" height="4"/><rect x="10" y="12" width="15" height="4"/><rect x="3" y="19" width="4" height="4"/><rect x="10" y="19" width="15" height="4"/></svg>',
+  slides: '<svg viewBox="0 0 28 28" fill="none" stroke="#fff" stroke-width="2" aria-hidden="true"><rect x="8" y="5" width="12" height="18"/><path d="M5 8v12M3 10v8M23 8v12M25 10v8" stroke-linecap="square"/></svg>',
+  prev: '<svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3.5" stroke-linecap="square" aria-hidden="true"><path d="M20 12H4M11 5l-7 7 7 7"/></svg>',
+  next: '<svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3.5" stroke-linecap="square" aria-hidden="true"><path d="M4 12h16M13 5l7 7-7 7"/></svg>',
+  link: '<svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>'
+};
+
+function el(tag, cls, text) {
+  var e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+}
+
+function loadMode() {
+  try { return localStorage.getItem('8btv-view') === 'slides' ? 'slides' : 'list'; } catch (e) { return 'list'; }
+}
+function saveMode(m) { try { localStorage.setItem('8btv-view', m); } catch (e) { /* ignore */ } }
+
+/* ---- font readiness (mirrors your font-ready / font-failed logic) ---- */
+(function () {
+  function done(ok) { root.classList.add(ok ? 'font-ready' : 'font-failed'); }
+  if (document.fonts && document.fonts.load) {
+    Promise.race([
+      document.fonts.load('16px "Px437 IBM EGA8"', '8BALLTV').then(function (f) { return !!(f && f.length); }),
+      new Promise(function (r) { setTimeout(function () { r(false); }, 3000); })
+    ]).then(done, function () { done(false); });
+  } else { done(false); }
+})();
+
+/* ---- menu + about modal ---- */
+(function () {
+  var btn = document.getElementById('menuBtn');
+  var menu = document.getElementById('menu');
+  var dlg = document.getElementById('aboutDlg');
+  function setOpen(open) { menu.hidden = !open; btn.setAttribute('aria-expanded', open ? 'true' : 'false'); }
+  btn.addEventListener('click', function (e) { e.stopPropagation(); setOpen(menu.hidden); });
+  document.addEventListener('click', function (e) { if (!menu.hidden && !menu.contains(e.target)) setOpen(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setOpen(false); });
+  document.getElementById('aboutBtn').addEventListener('click', function () {
+    setOpen(false);
+    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+  });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+
+  var dlDlg = document.getElementById('dlDlg');
+  document.getElementById('dlBtn').addEventListener('click', function () {
+    setOpen(false);
+    openDownload();
+    if (dlDlg.showModal) dlDlg.showModal(); else dlDlg.setAttribute('open', '');
+  });
+  dlDlg.addEventListener('click', function (e) { if (e.target === dlDlg) dlDlg.close(); });
+})();
+
+/* ---- "Download this submission" modal ---- */
+function openDownload() {
+  var res = buildYtdlp(state.videos, state.data.name, state.data.ts);
+  var total = state.videos.length, n = res.commands.length;
+  var body = document.getElementById('dlBody');
+  body.replaceChildren();
+
+  var intro;
+  if (n === total) {
+    intro = total === 1
+      ? 'This submission’s video is a streaming video link that can be downloaded with yt-dlp.'
+      : 'This submission is entirely made up of streaming video links that can be downloaded with yt-dlp.';
+  } else {
+    intro = 'This submission has ' + n + ' streaming video link' + (n === 1 ? '' : 's') + ' that can be downloaded with yt-dlp.';
+  }
+  body.appendChild(el('p', null, intro + (n === 1 ? ' Here is a command:' : ' Here are the commands:')));
+
+  var cmdText = res.commands.join('\n');   // one per line: works in bash, zsh, cmd and any PowerShell (no && needed)
+  body.appendChild(el('pre', 'cmd', cmdText));
+  var copyLabel = n === 1 ? 'Copy command' : 'Copy commands';
+  var copy = el('button', 'copylink', copyLabel); copy.type = 'button';
+  var timer;
+  copy.addEventListener('click', function () {
+    copyText(cmdText).then(function (ok) {
+      copy.textContent = ok ? 'Copied!' : 'Copy failed';
+      clearTimeout(timer); timer = setTimeout(function () { copy.textContent = copyLabel; }, 1600);
+    });
+  });
+  body.appendChild(copy);
+
+  if (res.skipped.length) {
+    var nums = res.skipped.map(function (s) { return s.num; });
+    var one = nums.length === 1;
+    body.appendChild(el('p', null,
+      (n === 1 ? 'This command' : 'These commands') + ' cannot download video' + (one ? '' : 's') + ' #' + formatRanges(nums) +
+      '. Download ' + (one ? 'it' : 'them') + ' another way.'));
+  }
+
+  var what = el('p');
+  var link = el('a', null, 'What is yt-dlp?');
+  link.href = 'https://www.reddit.com/r/youtubedl/comments/1go5z3k/can_someone_explain_it_like_i_havent_used_a/';
+  link.target = '_blank'; link.rel = 'noopener noreferrer';
+  what.appendChild(link);
+  body.appendChild(what);
+}
+
+/* ---- data ---- */
+function readData() {
+  var p = new URLSearchParams(location.hash.replace(/^#\/?\??/, ''));
+  function g(k) { return (p.get(k) || '').replace(/\r\n?/g, '\n'); }
+  return {
+    row: g('row').trim(), ts: g('ts'), name: g('name').trim(), email: g('email').trim(),
+    show: g('show').trim(), links: g('links'), desc: g('desc').trim(), notes: g('notes').trim(), status: g('status').trim()
+  };
+}
+
+function buildVideos(raw) {
+  var host = location.hostname || '';
+  var items = parseLinks(raw).map(function (it, i) {
+    var parsed = normalizeUrl(it.url);
+    return { title: it.title, raw: it.url, n: isNaN(it.n) ? Infinity : it.n, order: i, parsed: parsed, info: parsed ? classify(parsed, host) : { kind: 'link' } };
+  });
+  items.sort(function (a, b) { return (a.n - b.n) || (a.order - b.order); });
+  return items;
+}
+
+/* ---- clipboard ---- */
+function copyText(t) {
+  var fallback = function () {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      var ok = document.execCommand('copy'); ta.remove(); return ok;
+    } catch (e) { return false; }
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    return navigator.clipboard.writeText(t).then(function () { return true; }, function () { return fallback(); });
+  }
+  return Promise.resolve(fallback());
+}
+
+/* ---- YouTube embeddability pre-check (no API key). If the check itself can't run, we just embed. ---- */
+var ytCache = new Map();
+function ytEmbeddable(id) {
+  if (ytCache.has(id)) return ytCache.get(id);
+  var p = new Promise(function (resolve) {
+    var ctl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    var t = setTimeout(function () { if (ctl) ctl.abort(); resolve(true); }, 3500);
+    fetch('https://www.youtube.com/oembed?format=json&url=' + encodeURIComponent('https://www.youtube.com/watch?v=' + id), { signal: ctl ? ctl.signal : undefined })
+      .then(function (r) { clearTimeout(t); resolve(!(r.status === 401 || r.status === 403 || r.status === 404)); })
+      .catch(function () { clearTimeout(t); resolve(true); });
+  });
+  ytCache.set(id, p);
+  return p;
+}
+
+/* ---- media ---- */
+function linkBox(v) {
+  var ok = !!v.parsed;
+  var box = el(ok ? 'a' : 'div', 'linkbox' + (ok ? '' : ' nolink'));
+  if (ok) { box.href = v.parsed.href; box.target = '_blank'; box.rel = 'noopener noreferrer'; box.title = v.parsed.href; }
+  box.insertAdjacentHTML('beforeend', ICON.link);
+  box.appendChild(el('span', 'lbl', ok ? displayUrl(v.parsed) : 'NO VALID LINK'));
+  if (!ok && v.raw) box.appendChild(el('span', 'raw', v.raw));
+  return box;
+}
+
+function mountMedia(host, v) {
+  host.replaceChildren();
+  var token = ++tokenCounter;
+  host._tok = token;
+  var info = v.info;
+  function addIframe() {
+    var f = document.createElement('iframe');
+    f.src = info.src;
+    f.title = v.title || 'Video';
+    f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen';
+    f.allowFullscreen = true;
+    f.referrerPolicy = 'strict-origin-when-cross-origin';
+    host.appendChild(f);
+  }
+  if (info.kind === 'iframe') {
+    if (info.provider === 'youtube') {
+      ytEmbeddable(info.id).then(function (ok) {
+        if (host._tok !== token) return;         // slide changed or re-rendered meanwhile
+        if (ok) addIframe(); else host.appendChild(linkBox(v));
+      });
+    } else { addIframe(); }
+  } else if (info.kind === 'video') {
+    var vid = document.createElement('video');
+    vid.src = info.src; vid.controls = true; vid.preload = 'metadata'; vid.playsInline = true;
+    vid.addEventListener('error', function () { if (host._tok === token) { host.replaceChildren(); host.appendChild(linkBox(v)); } });
+    host.appendChild(vid);
+  } else {
+    host.appendChild(linkBox(v));
+  }
+}
+function unmountMedia(host) { host._tok = 0; host.replaceChildren(); }
+
+/* ---- render helpers ---- */
+function block(label, text) {
+  var b = el('section', 'block');
+  b.appendChild(el('p', 'label', label));
+  b.appendChild(el('p', 'text', text));
+  return b;
+}
+
+function toggle() {
+  var t = el('div', 'toggle');
+  t.setAttribute('role', 'group'); t.setAttribute('aria-label', 'View');
+  [['list', 'List view'], ['slides', 'Slideshow view']].forEach(function (pair) {
+    var b = el('button'); b.type = 'button';
+    b.title = pair[1]; b.setAttribute('aria-label', pair[1]);
+    b.setAttribute('aria-pressed', state.mode === pair[0] ? 'true' : 'false');
+    b.innerHTML = ICON[pair[0]];
+    b.addEventListener('click', function () {
+      if (state.mode === pair[0]) return;
+      state.mode = pair[0]; saveMode(pair[0]); render();
+    });
+    t.appendChild(b);
+  });
+  return t;
+}
+
+function titleText(i) { return (i + 1) + '. ' + (state.videos[i].title || 'Untitled'); }
+
+function render() {
+  var d = state.data;
+  app.replaceChildren();
+  ss = null;
+  var multi = state.videos.length > 1;
+  var mode = multi ? state.mode : 'list';
+
+  app.appendChild(el('h2', 'name', d.name || 'Unnamed submission'));
+
+  if (d.email) {
+    var eb = el('button', 'email'); eb.type = 'button';
+    eb.title = 'Click to copy';
+    eb.appendChild(el('span', null, d.email));
+    eb.insertAdjacentHTML('beforeend', ICON.copy);
+    var note = el('span', 'copied'); note.setAttribute('aria-live', 'polite');
+    var timer;
+    eb.addEventListener('click', function () {
+      copyText(d.email).then(function (ok) {
+        note.textContent = ok ? 'Copied!' : 'Copy failed';
+        clearTimeout(timer); timer = setTimeout(function () { note.textContent = ''; }, 1600);
+      });
+    });
+    var wrap = el('div'); wrap.appendChild(eb); wrap.appendChild(note);
+    app.appendChild(wrap);
+  }
+
+  var parts = [];
+  var when = formatTimestamp(d.ts);
+  if (when) parts.push('Submitted ' + when);
+  if (d.row) parts.push('(row ' + d.row + ')');
+  if (parts.length) app.appendChild(el('p', 'submitted', parts.join(' ')));
+
+  var status = d.status || 'UNDECIDED';
+  app.appendChild(el('p', 'metaline' + (status.trim().toUpperCase() === 'ON AIR' ? ' onair' : ''), 'STATUS: ' + status));
+  if (d.show) app.appendChild(el('p', 'metaline', 'SHOW: ' + d.show));
+
+  if (d.notes) app.appendChild(block('Note:', d.notes));
+
+  if (mode === 'list') {
+    if (d.desc) app.appendChild(block('Description:', d.desc));
+    if (multi) { var tb = el('div', 'toolbar'); tb.appendChild(toggle()); app.appendChild(tb); }
+    var list = el('div', 'list');
+    state.videos.forEach(function (v, i) {
+      var item = el('section', 'video');
+      item.appendChild(el('h3', 'vtitle', titleText(i)));
+      var media = el('div', 'media');
+      item.appendChild(media);
+      list.appendChild(item);
+      mountMedia(media, v);
+    });
+    app.appendChild(list);
+  } else {
+    buildSlideshow();
+    if (d.desc) app.appendChild(block('Description:', d.desc));
+  }
+
+  document.title = (d.name ? d.name + ' - ' : '') + '8BALLTV Submission Preview';
+}
+
+/* ---- slideshow ---- */
+function buildSlideshow() {
+  var head = el('div', 'sshead');
+  head.appendChild(toggle());
+  var title = el('h3', 'vtitle', titleText(state.index));
+  head.appendChild(title);
+  head.appendChild(el('div', 'spacer'));
+  app.appendChild(head);
+
+  var vp = el('div', 'ss-vp');
+  var track = el('div', 'ss-track');
+  var slides = [], medias = [];
+  state.videos.forEach(function (v, i) {
+    var slide = el('div', 'slide');
+    var media = el('div', 'media');
+    slide.appendChild(media);
+    slide.addEventListener('click', function () { if (i !== state.index) goTo(i); });
+    track.appendChild(slide);
+    slides.push(slide); medias.push(media);
+  });
+  var prev = el('button', 'arrow prev'); prev.type = 'button'; prev.setAttribute('aria-label', 'Previous video'); prev.innerHTML = ICON.prev;
+  var next = el('button', 'arrow next'); next.type = 'button'; next.setAttribute('aria-label', 'Next video'); next.innerHTML = ICON.next;
+  prev.addEventListener('click', function () { goTo(state.index - 1); });
+  next.addEventListener('click', function () { goTo(state.index + 1); });
+  vp.appendChild(track); vp.appendChild(prev); vp.appendChild(next);
+  app.appendChild(vp);
+
+  // swipe (works on the margins/edges; the embedded players keep their own touches)
+  var sx = null;
+  vp.addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; }, { passive: true });
+  vp.addEventListener('touchend', function (e) {
+    if (sx == null) return;
+    var dx = e.changedTouches[0].clientX - sx; sx = null;
+    if (Math.abs(dx) > 50) goTo(state.index + (dx < 0 ? 1 : -1));
+  }, { passive: true });
+
+  ss = { vp: vp, track: track, slides: slides, medias: medias, prev: prev, next: next, title: title, mounted: -1 };
+  layout(false);
+  update(false);
+}
+
+function layout(animate) {
+  if (!ss) return;
+  var W = ss.vp.clientWidth;
+  if (!W) return;
+  var sw = Math.round(W * 0.7), gap = Math.round(W * 0.047);
+  ss.track.style.setProperty('--sw', sw + 'px');
+  ss.track.style.gap = gap + 'px';
+  ss.track.style.transition = animate ? 'transform .35s ease' : 'none';
+  ss.track.style.transform = 'translateX(' + ((W - sw) / 2 - state.index * (sw + gap)) + 'px)';
+}
+
+function update(animate) {
+  var last = state.videos.length - 1;
+  ss.slides.forEach(function (s, i) { s.classList.toggle('active', i === state.index); s.setAttribute('aria-hidden', i === state.index ? 'false' : 'true'); });
+  if (ss.mounted !== state.index) {
+    if (ss.mounted > -1) unmountMedia(ss.medias[ss.mounted]);
+    mountMedia(ss.medias[state.index], state.videos[state.index]);
+    ss.mounted = state.index;
+  }
+  ss.title.textContent = titleText(state.index);
+  ss.prev.disabled = state.index <= 0;
+  ss.next.disabled = state.index >= last;
+  layout(animate);
+}
+
+function goTo(i) {
+  if (!ss) return;
+  i = Math.max(0, Math.min(state.videos.length - 1, i));   // no wrap-around: stops at the ends
+  if (i === state.index) return;
+  state.index = i;
+  update(true);
+}
+
+window.addEventListener('resize', function () { layout(false); });
+document.addEventListener('keydown', function (e) {
+  if (!ss || state.mode !== 'slides') return;
+  if (document.querySelector('dialog[open]')) return;
+  if (e.key === 'ArrowLeft') goTo(state.index - 1);
+  else if (e.key === 'ArrowRight') goTo(state.index + 1);
+});
+
+/* ---- boot ---- */
+function load() {
+  var dlBtn = document.getElementById('dlBtn');
+  dlBtn.hidden = true;
+  if (!location.hash || location.hash.length < 2) {
+    app.replaceChildren();
+    ss = null;
+    app.appendChild(el('p', 'empty', 'No submission data found in this link. Open this page from the Preview link in the sheet.'));
+    return;
+  }
+  state.data = readData();
+  state.videos = buildVideos(state.data.links);
+  state.index = 0;
+  dlBtn.hidden = !state.videos.some(function (v) { return v.info && v.info.dl; });
+  render();
+}
+window.addEventListener('hashchange', load);
+load();
+})();
+</script>
+</body>
+</html>
